@@ -10,6 +10,19 @@
         path: /etc/issue
       register: st
 
+    - name: enable banner in ssh
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^Banner='
+        line: Banner /etc/issue
+      register: result
+
+    - name: restart ssh
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+      when: result.changed
+
     - name: if banner is not present, add it
       ansible.builtin.copy:
         content: |
